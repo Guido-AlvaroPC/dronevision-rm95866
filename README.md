@@ -87,3 +87,13 @@ O script é idempotente: Resource Group e Azure AI Vision já criados são reuti
 O front-end envia a imagem ao backend Flask no App Service via HTTPS, no endpoint `/api/analisar`. O backend lê `VISION_ENDPOINT` e `VISION_KEY` das App Settings do Web App; a chave não é exposta ao navegador.
 
 Com essas variáveis, o Flask chama a API REST do Azure AI Vision (Image Analysis v3.2, `visualFeatures=Description,Tags,Objects`), enviando os bytes da imagem (`Content-Type: application/octet-stream`). O JSON retornado é transformado em descrição, confiança, etiquetas e objetos, que a página exibe. Falhas (arquivo inválido, timeout, autenticação, limite 429, serviço indisponível ou configuração ausente) são convertidas em mensagens amigáveis em português.
+
+## Como excluir o grupo de recursos
+
+No Azure Cloud Shell (Bash):
+
+```bash
+az group delete --name rg-dronevision-rm95866 --yes --no-wait
+```
+
+Esse comando apaga o Resource Group `rg-dronevision-rm95866` e todos os recursos criados pelo script (Azure AI Vision, App Service Plan e Web App). O `--no-wait` devolve o prompt na hora; a exclusão continua em segundo plano. Para esperar terminar, omita `--no-wait`.
