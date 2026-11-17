@@ -27,17 +27,13 @@ flowchart LR
 ## Como executar no Azure Cloud Shell (Bash)
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPO.git
-cd SEU_REPO
+git clone https://github.com/Guido-AlvaroPC/dronevision-rm95866.git
+cd dronevision-rm95866
 chmod +x implantar-rm95866.sh
 ./implantar-rm95866.sh
 ```
 
-### Ajuste manual obrigatorio antes do script
-
-No arquivo `implantar-rm95866.sh`, configure:
-
-- `REPO_URL="https://github.com/SEU_USUARIO/SEU_REPO.git"`
+O script tenta criar o App Service Plan em `B1/eastus` (padrao do enunciado). Se a assinatura academica nao tiver cota, ele cai automaticamente para `B1/westus2` e depois `F1/westus2`, sem mudar o nome dos recursos.
 
 ## Como a aplicacao se integra com a Visao Computacional
 

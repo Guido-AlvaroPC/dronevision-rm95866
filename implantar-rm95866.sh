@@ -16,6 +16,9 @@ APP="app-${PROJETO}-rm${RM}"
 REPO_URL="https://github.com/Guido-AlvaroPC/dronevision-rm95866.git"
 VISION_SKU="S1"
 # VISION_SKU="F0"  # opcao alternativa: Free Tier (limitada a 1 por assinatura)
+PLAN_SKU="B1"
+# PLAN_SKU="F1"  # fallback para assinatura academica sem cota de B1
+PLAN_LOCATION="${LOCAL}"
 
 TMP_DIR="$(mktemp -d)"
 ZIP_PATH="${TMP_DIR}/app.zip"
@@ -99,13 +102,43 @@ passo 4 "Criando/reutilizando App Service Plan ${PLAN}"
 if az appservice plan show --name "${PLAN}" --resource-group "${RG}" --query name -o tsv >/dev/null 2>&1; then
   echo "App Service Plan ja existe. Reutilizando."
 else
-  az appservice plan create \
-    --name "${PLAN}" \
-    --resource-group "${RG}" \
-    --location "${LOCAL}" \
-    --is-linux \
-    --sku B1 \
-    --output table
+  # Assinaturas academicas da FIAP costumam ter cota 0 de B1 em eastus.
+  # Tenta B1 na regiao pedida, depois B1 em westus2 e, por ultimo, F1 em westus2.
+  PLAN_CRIADO=0
+  for tentativa in "B1:${LOCAL}" "B1:westus2" "F1:westus2"; do
+    sku_tentativa="${tentativa%%:*}"
+    loc_tentativa="${tentativa##*:}"
+    echo "Tentando criar o plano Linux ${sku_tentativa} em ${loc_tentativa}..."
+    set +e
+    PLAN_CREATE_OUTPUT="$(az appservice plan create \
+      --name "${PLAN}" \
+      --resource-group "${RG}" \
+      --location "${loc_tentativa}" \
+      --is-linux \
+      --sku "${sku_tentativa}" \
+      --output table 2>&1)"
+    PLAN_CREATE_CODE=$?
+    set -e
+
+    if [[ ${PLAN_CREATE_CODE} -eq 0 ]]; then
+      PLAN_SKU="${sku_tentativa}"
+      PLAN_LOCATION="${loc_tentativa}"
+      PLAN_CRIADO=1
+      echo "${PLAN_CREATE_OUTPUT}"
+      echo "Plano criado: ${PLAN} (${PLAN_SKU}, ${PLAN_LOCATION})."
+      break
+    fi
+
+    echo "${PLAN_CREATE_OUTPUT}"
+    echo "Cota/SKU indisponivel para ${sku_tentativa} em ${loc_tentativa}. Tentando alternativa..."
+  done
+
+  if [[ ${PLAN_CRIADO} -ne 1 ]]; then
+    echo "Erro: nao foi possivel criar o App Service Plan ${PLAN}."
+    echo "Sua assinatura nao tem cota para B1/F1 nas regioes tentadas."
+    echo "No Portal, abra Quotas (App Service) ou tente outra assinatura."
+    exit 1
+  fi
 fi
 
 passo 5 "Criando Web App ${APP} e configurando App Settings"
@@ -195,6 +228,6 @@ echo
 echo "Deploy finalizado."
 echo "Resource Group: ${RG}"
 echo "Azure AI Vision: ${AIV}"
-echo "App Service Plan: ${PLAN}"
+echo "App Service Plan: ${PLAN} (${PLAN_SKU}, ${PLAN_LOCATION})"
 echo "Web App: ${APP}"
 echo "URL: ${APP_URL}"
