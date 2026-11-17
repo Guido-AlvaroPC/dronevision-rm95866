@@ -13,7 +13,7 @@ RG="rg-${PROJETO}-rm${RM}"
 AIV="aiv-${PROJETO}-rm${RM}"
 PLAN="plan-${PROJETO}-rm${RM}"
 APP="app-${PROJETO}-rm${RM}"
-REPO_URL="https://github.com/SEU_USUARIO/SEU_REPO.git"   # ajustar
+REPO_URL="https://github.com/Guido-AlvaroPC/dronevision-rm95866.git"
 VISION_SKU="S1"
 # VISION_SKU="F0"  # opcao alternativa: Free Tier (limitada a 1 por assinatura)
 
@@ -35,11 +35,6 @@ passo() {
 
 if ! az account show --output none >/dev/null 2>&1; then
   echo "Erro: sessao Azure nao encontrada. Abra o Azure Cloud Shell em modo Bash."
-  exit 1
-fi
-
-if [[ "${REPO_URL}" == "https://github.com/SEU_USUARIO/SEU_REPO.git" ]]; then
-  echo "Erro: ajuste a variavel REPO_URL no topo do script com a URL real do seu repositorio."
   exit 1
 fi
 
