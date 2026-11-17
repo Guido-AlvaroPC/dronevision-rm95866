@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Flask / runtime
+instance/
+.env
+.env.*
+
+# Build/deploy artifacts
+*.zip
+*.log
+tmp/
+temp/
+
+# IDE/OS
+.DS_Store
+Thumbs.db

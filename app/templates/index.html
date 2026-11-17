@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DroneVision</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <main class="container">
+    <header class="hero">
+      <p class="badge">Global Solution · RM 95866</p>
+      <h1>DroneVision</h1>
+      <p class="subtitle">
+        Envie uma imagem de monitoramento aereo para receber descricao, etiquetas e objetos detectados pelo Azure AI Vision.
+      </p>
+      <p class="obs">
+        Observacao: o retorno da IA pode vir em ingles, conforme o servico de visao computacional.
+      </p>
+    </header>
+
+    <section class="card">
+      <form id="form-analise" novalidate>
+        <label for="imagem" class="label">Imagem para analise</label>
+        <div class="input-row">
+          <input
+            id="imagem"
+            name="imagem"
+            type="file"
+            accept=".jpg,.jpeg,.png,.bmp,.gif,image/jpeg,image/png,image/bmp,image/gif"
+            required
+          >
+          <button id="botao-analisar" type="submit">Analisar imagem</button>
+        </div>
+        <small class="hint">Formatos aceitos: JPG, PNG, BMP e GIF · Tamanho maximo: 4 MB.</small>
+      </form>
+
+      <div id="erro" class="erro hidden" role="alert"></div>
+
+      <div id="preview-wrapper" class="preview-wrapper hidden">
+        <h2>Pre-visualizacao</h2>
+        <img id="preview" alt="Pre-visualizacao da imagem selecionada">
+      </div>
+
+      <div id="loading" class="loading hidden" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Analisando imagem no Azure AI Vision...</span>
+      </div>
+    </section>
+
+    <section id="resultado" class="resultado hidden" aria-live="polite">
+      <article class="card bloco">
+        <h2>Descricao</h2>
+        <p id="descricao-texto" class="descricao"></p>
+        <p id="descricao-confianca" class="confianca"></p>
+      </article>
+
+      <article class="card bloco">
+        <h2>Etiquetas (Tags)</h2>
+        <ul id="lista-etiquetas" class="lista"></ul>
+      </article>
+
+      <article class="card bloco">
+        <h2>Objetos identificados</h2>
+        <ul id="lista-objetos" class="lista"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</body>
+</html>
